@@ -14,12 +14,12 @@ void multiplicacion(BYTE a, BYTE b, BYTE *res);
 
 int main(int argc, char const *argv[])
 {
-	BYTE a (argv[1]);
-	BYTE b (argv[2]);
+	BYTE a (atoi(argv[1]));
+	BYTE b (atoi(argv[2]));
 	BYTE c;
 	multiplicacion(a,b,&c);
 }
-void multiplicacion(BYTE a, BYTE b, BYTE *res){
+BYTE multiplicacion(BYTE a, BYTE b){
 	BYTE polinomio (0x1B);
 	BYTE *resultados=(BYTE*)malloc(sizeof(BYTE)*8);
 	BYTE *suma=(BYTE*)malloc(sizeof(BYTE)*8);
@@ -38,7 +38,7 @@ void multiplicacion(BYTE a, BYTE b, BYTE *res){
 			}
 		}
 		else
-			resultados[0]=a; 
+		resultados[0]=a; 
 		//cout<<resultados[i].to_string()<<endl<<endl;
 		if(b[i]==1)
 			suma[i]=bitset<8> (0xFF);
@@ -46,12 +46,17 @@ void multiplicacion(BYTE a, BYTE b, BYTE *res){
 			suma[i] =bitset<8> (0x00);
 
 	}
-	*res=bitset<8> (0x00);
-	*res=((resultados[0]&suma[0] )^(resultados[1]&suma[1] )^(resultados[2]&suma[2] )^(resultados[3]&suma[3] )^(resultados[4]&suma[4] )^(resultados[5]&suma[5] )^(resultados[6]&suma[6])^(resultados[7]&suma[7]));
+	res=bitset<8> (0x00);
+	res=((resultados[0]&suma[0] )^(resultados[1]&suma[1] )^(resultados[2]&suma[2] )^(resultados[3]&suma[3] )^(resultados[4]&suma[4] )^(resultados[5]&suma[5] )^(resultados[6]&suma[6])^(resultados[7]&suma[7]));
 	cout<<"Resultado: "<< *res<<endl;
+	return res;
+
 
 }
+void MixColumns(BYTE *vecEnt, BYTE *vecSal){
+	VecSal[0]=(multiplicacion(vecEnt[0],BYTE (02));
 
+}
 void BintoDec(BYTE a,uint *b)
 {
 	*b=(uint)a.to_ulong();
