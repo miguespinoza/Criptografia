@@ -10,14 +10,30 @@ void HexToDec(uint a,uint *b);
 void DecToBin(uint a,BYTE *b);
 void DecToHex(uint a,uint *b);
 uint potencia(uint n,uint pot);
-void multiplicacion(BYTE a, BYTE b, BYTE *res);
+BYTE multiplicacion(BYTE a, BYTE b);
+void MixColumns(BYTE *vecEnt, BYTE *VecSal);
 
 int main(int argc, char const *argv[])
 {
-	BYTE a (atoi(argv[1]));
-	BYTE b (atoi(argv[2]));
-	BYTE c;
-	multiplicacion(a,b,&c);
+	//BYTE a (atoi(argv[1]));
+	//BYTE b (atoi(argv[2]));
+	//BYTE c;
+	//multiplicacion(a,b,&c);
+	BYTE *vent=(BYTE*)malloc(sizeof(BYTE)*4);
+	BYTE *vsal=(BYTE*)malloc(sizeof(BYTE)*4);
+	vent[0]=BYTE (0xd4);
+	vent[1]=BYTE (0xbf);
+	vent[2]=BYTE (0x5d);
+	vent[3]=BYTE (0x30);
+	MixColumns(vent, vsal);	
+	for (int i = 0; i < 4; i++)
+	{
+		cout<<vsal[i]<<endl;
+	}
+//| d4 e0 b8 1e ┃       ┃ 02 03 01 01 ┃       ┃ 04 e0 48 28 ┃ 
+//┃ bf b4 41 27 ┃       ┃ 01 02 03 01 ┃       ┃ 66 cb f8 06 ┃ 
+//┃ 5d 52 11 98 ┃       ┃ 01 01 02 03 ┃       ┃ 81 19 d3 26 ┃ 
+//┃ 30 ae f1 e5 ┃       ┃ 03 01 01 02 ┃       ┃ e5 9a 7a 4c ┃
 }
 BYTE multiplicacion(BYTE a, BYTE b){
 	BYTE polinomio (0x1B);
@@ -44,18 +60,17 @@ BYTE multiplicacion(BYTE a, BYTE b){
 			suma[i]=bitset<8> (0xFF);
 		else
 			suma[i] =bitset<8> (0x00);
-
 	}
-	res=bitset<8> (0x00);
+	BYTE res=bitset<8> (0x00);
 	res=((resultados[0]&suma[0] )^(resultados[1]&suma[1] )^(resultados[2]&suma[2] )^(resultados[3]&suma[3] )^(resultados[4]&suma[4] )^(resultados[5]&suma[5] )^(resultados[6]&suma[6])^(resultados[7]&suma[7]));
-	cout<<"Resultado: "<< *res<<endl;
+	//cout<<"Resultado: "<< *res<<endl;
 	return res;
-
-
 }
-void MixColumns(BYTE *vecEnt, BYTE *vecSal){
-	VecSal[0]=(multiplicacion(vecEnt[0],BYTE (02));
-
+void MixColumns(BYTE *vecEnt, BYTE *VecSal){
+	VecSal[0]=((multiplicacion(vecEnt[0],BYTE (0x02)))^(multiplicacion(vecEnt[1],BYTE (0x03)))^(vecEnt[2])^(vecEnt[3]));
+	VecSal[1]=((multiplicacion(vecEnt[1],BYTE (0x02)))^(multiplicacion(vecEnt[2],BYTE (0x03)))^(vecEnt[0])^(vecEnt[3]));
+	VecSal[2]=((multiplicacion(vecEnt[2],BYTE (0x02)))^(multiplicacion(vecEnt[3],BYTE (0x03)))^(vecEnt[0])^(vecEnt[1]));
+	VecSal[3]=((multiplicacion(vecEnt[3],BYTE (0x02)))^(multiplicacion(vecEnt[0],BYTE (0x03)))^(vecEnt[1])^(vecEnt[2]));
 }
 void BintoDec(BYTE a,uint *b)
 {
