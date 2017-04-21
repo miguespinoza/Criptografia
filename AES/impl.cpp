@@ -59,8 +59,10 @@ int main(int argc, char const *argv[])
 
 	aes.addRoundKey(mEnt,mSal,rKey);
 	printMatrix(mSal);
-
-
+	mEnt=mSal;
+	aes.subByte(mEnt,mSal);
+	cout<<endl;
+	printMatrix(mSal);
 	return 0;
 }
 

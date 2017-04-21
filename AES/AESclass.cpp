@@ -60,7 +60,20 @@ void addRoundKey(BYTE **mEnt,BYTE **mSal, BYTE **roundKey){
 }
 
 void subByte(BYTE **mEnt, BYTE **mSal){
-
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			mSal[i][j]=SBOX(mEnt[i][j]);
+		}
+	}
+}
+BYTE SBOX(BYTE ent){
+	BYTE a(0b00001111);
+	BYTE columna(ent&a);
+	BYTE fila(ent>>4);
+	BYTE map= fs_box[fila.to_ulong()][columna.to_ulong()];
+	return map;
 }
 BYTE is_box[16][16] =
 {
