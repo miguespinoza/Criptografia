@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include <bitset>
 #include "AESclass.cpp"
 using namespace std;
@@ -22,7 +23,7 @@ int main(int argc, char const *argv[])
 		mSal[i]=(BYTE*)malloc(sizeof(BYTE)*4);
 		rKey[i]=(BYTE*)malloc(sizeof(BYTE)*4);
 	}
-	mEnt[0][0]= BYTE(0xba);
+	/*mEnt[0][0]= BYTE(0xba);
 	mEnt[0][1]= BYTE(0x75);
 	mEnt[0][2]= BYTE(0xf4);
 	mEnt[0][3]= BYTE(0x7a);
@@ -37,7 +38,24 @@ int main(int argc, char const *argv[])
 	mEnt[3][0]= BYTE(0x1b);
 	mEnt[3][1]= BYTE(0x40);
 	mEnt[3][2]= BYTE(0x7d);
-	mEnt[3][3]= BYTE(0x5d);
+	mEnt[3][3]= BYTE(0x5d);*/
+
+	mEnt[0][0]= BYTE(0x2b);
+	mEnt[0][1]= BYTE(0x7e);
+	mEnt[0][2]= BYTE(0x15);
+	mEnt[0][3]= BYTE(0x16);
+	mEnt[1][0]= BYTE(0x28);
+	mEnt[1][1]= BYTE(0xae);
+	mEnt[1][2]= BYTE(0xd2);
+	mEnt[1][3]= BYTE(0xa6);
+	mEnt[2][0]= BYTE(0xab);
+	mEnt[2][1]= BYTE(0xf7);
+	mEnt[2][2]= BYTE(0x15);
+	mEnt[2][3]= BYTE(0x88);
+	mEnt[3][0]= BYTE(0x09);
+	mEnt[3][1]= BYTE(0xcf);
+	mEnt[3][2]= BYTE(0x4f);
+	mEnt[3][3]= BYTE(0x3c);
 
 	rKey[0][0]= BYTE(0xe2);
 	rKey[0][1]= BYTE(0x32);
@@ -57,12 +75,20 @@ int main(int argc, char const *argv[])
 	rKey[3][3]= BYTE(0x93);
 
 
-	aes.addRoundKey(mEnt,mSal,rKey);
-	printMatrix(mSal);
-	mEnt=mSal;
+	//aes.addRoundKey(mEnt,mSal,rKey);
+	aes.setKey(mEnt);
+	//printMatrix(mSal);
+	
+	/*aes.exchangeMatrix(mEnt,mSal);
 	aes.subByte(mEnt,mSal);
 	cout<<endl;
 	printMatrix(mSal);
+	//mEnt=mSal;
+	aes.exchangeMatrix(mEnt,mSal);
+	
+	aes.shiftRows(mEnt,mSal);
+	cout<<endl;
+	printMatrix(mSal);*/
 	return 0;
 }
 
