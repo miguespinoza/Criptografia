@@ -40,45 +40,53 @@ int main(int argc, char const *argv[])
 	mEnt[3][2]= BYTE(0x7d);
 	mEnt[3][3]= BYTE(0x5d);*/
 
-	mEnt[0][0]= BYTE(0x2b);
-	mEnt[0][1]= BYTE(0x7e);
-	mEnt[0][2]= BYTE(0x15);
-	mEnt[0][3]= BYTE(0x16);
-	mEnt[1][0]= BYTE(0x28);
-	mEnt[1][1]= BYTE(0xae);
-	mEnt[1][2]= BYTE(0xd2);
-	mEnt[1][3]= BYTE(0xa6);
-	mEnt[2][0]= BYTE(0xab);
-	mEnt[2][1]= BYTE(0xf7);
-	mEnt[2][2]= BYTE(0x15);
-	mEnt[2][3]= BYTE(0x88);
-	mEnt[3][0]= BYTE(0x09);
-	mEnt[3][1]= BYTE(0xcf);
-	mEnt[3][2]= BYTE(0x4f);
-	mEnt[3][3]= BYTE(0x3c);
+	mEnt[0][0]= BYTE(0x32);
+	mEnt[0][1]= BYTE(0x43);
+	mEnt[0][2]= BYTE(0xf6);
+	mEnt[0][3]= BYTE(0xa8);
+	mEnt[1][0]= BYTE(0x88);
+	mEnt[1][1]= BYTE(0x5a);
+	mEnt[1][2]= BYTE(0x30);
+	mEnt[1][3]= BYTE(0x8d);
+	mEnt[2][0]= BYTE(0x31);
+	mEnt[2][1]= BYTE(0x31);
+	mEnt[2][2]= BYTE(0x98);
+	mEnt[2][3]= BYTE(0xa2);
+	mEnt[3][0]= BYTE(0xe0);
+	mEnt[3][1]= BYTE(0x37);
+	mEnt[3][2]= BYTE(0x07);
+	mEnt[3][3]= BYTE(0x34);
 
-	rKey[0][0]= BYTE(0xe2);
-	rKey[0][1]= BYTE(0x32);
-	rKey[0][2]= BYTE(0xfc);
-	rKey[0][3]= BYTE(0xf1);
-	rKey[1][0]= BYTE(0x91);
-	rKey[1][1]= BYTE(0x12);
-	rKey[1][2]= BYTE(0x91);
-	rKey[1][3]= BYTE(0x88);
-	rKey[2][0]= BYTE(0xb1);
-	rKey[2][1]= BYTE(0x59);
-	rKey[2][2]= BYTE(0xe4);
-	rKey[2][3]= BYTE(0xe6);
-	rKey[3][0]= BYTE(0xd6);
-	rKey[3][1]= BYTE(0x79);
-	rKey[3][2]= BYTE(0xa2);
-	rKey[3][3]= BYTE(0x93);
+	rKey[0][0]= BYTE(0x2b);
+	rKey[0][1]= BYTE(0x7e);
+	rKey[0][2]= BYTE(0x15);
+	rKey[0][3]= BYTE(0x16);
+	rKey[1][0]= BYTE(0x28);
+	rKey[1][1]= BYTE(0xae);
+	rKey[1][2]= BYTE(0xd2);
+	rKey[1][3]= BYTE(0xa6);
+	rKey[2][0]= BYTE(0xab);
+	rKey[2][1]= BYTE(0xf7);
+	rKey[2][2]= BYTE(0x15);
+	rKey[2][3]= BYTE(0x88);
+	rKey[3][0]= BYTE(0x09);
+	rKey[3][1]= BYTE(0xcf);
+	rKey[3][2]= BYTE(0x4f);
+	rKey[3][3]= BYTE(0x3c);
 
-
-	//aes.addRoundKey(mEnt,mSal,rKey);
-	aes.setKey(mEnt);
-	//printMatrix(mSal);
-	
+	printMatrix(mEnt);
+	aes.addRoundKey(mEnt,rKey);
+	//aes.setKey(mEnt);
+	printMatrix(mEnt);
+	printf("subByte\n");
+	aes.subByte(mEnt);
+	printMatrix(mEnt);
+	printf("shiftRows\n");
+	aes.shiftRows(mEnt);
+	printMatrix(mEnt);
+	printf("mixColumns\n");
+	aes.mixColums(mEnt);
+	printMatrix(mEnt);
 	/*aes.exchangeMatrix(mEnt,mSal);
 	aes.subByte(mEnt,mSal);
 	cout<<endl;
@@ -93,11 +101,11 @@ int main(int argc, char const *argv[])
 }
 
 void printMatrix(BYTE **mat){
-	for (int i = 0; i < 4; i++)
+	for (int fila = 0; fila < 4; fila++)
 	{
-		for (int j = 0; j < 4; ++j)
+		for (int col = 0; col < 4; ++col)
 		{
-			cout<<hex<<mat[j][i].to_ulong()<<"   ";
+			cout<<hex<<mat[col][fila].to_ulong()<<"   ";
 		}
 		cout<<endl;
 	}

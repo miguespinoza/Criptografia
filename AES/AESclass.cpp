@@ -5,11 +5,10 @@ typedef bitset<8> BYTE;
 
 class AESclass{
 private:
-	BYTE **key;
 	BYTE ***roundKeys;
+	BYTE **stateM;
 	void initMemory();
 	BYTE multiplicacion(BYTE a, BYTE b);
-	void multVector(BYTE *vecEnt, BYTE *VecSal);
 	void exchangeMatrix(BYTE **mDest,BYTE **mSource);
 	BYTE SBOX(BYTE ent);
 	void KeyExpansion();
@@ -61,23 +60,157 @@ private:
 		{0x1B, 0x00,0x00,0x00},
 		{0x36, 0x00,0x00,0x00}};
 public:
+	void printMatrix(BYTE **mat){
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			cout<<hex<<mat[j][i].to_ulong()<<"   ";
+		}
+		cout<<endl;
+	}
+}
 	AESclass(){
 		initMemory();
 	}
-	void mixColums(BYTE **mEnt,BYTE **mSal);
+	std::string encrypt(std::string entrada, BYTE **clabe){
+		setKey(clabe);
+		std::string salida="";
+		int longitud=entrada.size();
+		cout<<"longitud de cadena"<<longitud%128<<endl;
+		if (longitud%128!=0)
+		{
+			for (int i = 0; i < 128-longitud; ++i)
+			{
+				entrada+='_';
+			}
+		}
+		int numCiclos=entrada.size()/128;
+		cout<<"ciclos"<<entrada.size()<<endl;
+		for (int ciclo = 0; ciclo < numCiclos; ++ciclo)
+		{
+			//create state matrix
+			int cont=0;
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					stateM[i][j]=BYTE(entrada[cont]);
+					cont++;
+				}
+			}
+			printMatrix(stateM);
+			//initial round
+			addRoundKey(stateM,roundKeys[0]);
+			//9rounds
+			for (int ronda = 0; ronda < 9; ++ronda)
+			{
+				subByte(stateM);
+				shiftRows(stateM);
+				mixColums(stateM);
+				addRoundKey(stateM,roundKeys[ronda+1]);
+			}
+			//final round
+			subByte(stateM);
+			shiftRows(stateM);
+			addRoundKey(stateM,roundKeys[10]);
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					salida+=stateM[i][j].to_string();
+				}
+			}
+		}
+		
+		
+		return salida;
+	}
+	void encryptTEST(){
+		BYTE **mEnt=(BYTE**)malloc(sizeof(BYTE)*4);
+		BYTE **rKey=(BYTE**)malloc(sizeof(BYTE)*4);
+		for (int i = 0; i < 4; ++i)
+		{
+			mEnt[i]=(BYTE*)malloc(sizeof(BYTE)*4);
+			rKey[i]=(BYTE*)malloc(sizeof(BYTE)*4);
+		}
+		mEnt[0][0]= BYTE(0x32);
+		mEnt[0][1]= BYTE(0x43);
+		mEnt[0][2]= BYTE(0xf6);
+		mEnt[0][3]= BYTE(0xa8);
+		mEnt[1][0]= BYTE(0x88);
+		mEnt[1][1]= BYTE(0x5a);
+		mEnt[1][2]= BYTE(0x30);
+		mEnt[1][3]= BYTE(0x8d);
+		mEnt[2][0]= BYTE(0x31);
+		mEnt[2][1]= BYTE(0x31);
+		mEnt[2][2]= BYTE(0x98);
+		mEnt[2][3]= BYTE(0xa2);
+		mEnt[3][0]= BYTE(0xe0);
+		mEnt[3][1]= BYTE(0x37);
+		mEnt[3][2]= BYTE(0x07);
+		mEnt[3][3]= BYTE(0x34);
+
+		rKey[0][0]= BYTE(0x2b);
+		rKey[0][1]= BYTE(0x7e);
+		rKey[0][2]= BYTE(0x15);
+		rKey[0][3]= BYTE(0x16);
+		rKey[1][0]= BYTE(0x28);
+		rKey[1][1]= BYTE(0xae);
+		rKey[1][2]= BYTE(0xd2);
+		rKey[1][3]= BYTE(0xa6);
+		rKey[2][0]= BYTE(0xab);
+		rKey[2][1]= BYTE(0xf7);
+		rKey[2][2]= BYTE(0x15);
+		rKey[2][3]= BYTE(0x88);
+		rKey[3][0]= BYTE(0x09);
+		rKey[3][1]= BYTE(0xcf);
+		rKey[3][2]= BYTE(0x4f);
+		rKey[3][3]= BYTE(0x3c);
+		setKey(rKey);
+	
+		//create state matrix
+		stateM=mEnt;
+		printMatrix(stateM);
+		//initial round
+		addRoundKey(stateM,roundKeys[0]);
+		printMatrix(stateM);
+		//9rounds
+		for (int ronda = 0; ronda < 9; ++ronda)
+		{
+			subByte(stateM);
+			shiftRows(stateM);
+			mixColums(stateM);
+			addRoundKey(stateM,roundKeys[ronda+1]);
+		}
+		//final round
+		subByte(stateM);
+		shiftRows(stateM);
+		addRoundKey(stateM,roundKeys[10]);
+
+		
+		
+		printMatrix(stateM);
+	}
+	/*void mixColums(BYTE **mEnt,BYTE **mSal);
 	void addRoundKey(BYTE **mEnt,BYTE **mSal, BYTE **roundKey);
 	void subByte(BYTE **mEnt, BYTE **mSal);
-	void shiftRows(BYTE **mEnt, BYTE **mSal);
+	void shiftRows(BYTE **mEnt, BYTE **mSal);*/
+	void mixColums(BYTE **mEnt);
+	void addRoundKey(BYTE **mEnt, BYTE **roundKey);
+	void subByte(BYTE **mEnt);
+	void shiftRows(BYTE **mEnt);
 	void setKey(BYTE **sourcekey);
 
 };
 
 void AESclass:: initMemory(){
-		key=(BYTE**)malloc(sizeof(BYTE)*4);
+		
 		roundKeys= (BYTE***)malloc(sizeof(BYTE)*11);
+		stateM= (BYTE**)malloc(sizeof(BYTE)*4);
 		for (int i = 0; i < 4; ++i)
 		{
-			key[i]=(BYTE*)malloc(sizeof(BYTE)*4);
+			stateM[i]= (BYTE*)malloc(sizeof(BYTE)*4);
 		}
 		for (int i = 0; i < 11; ++i)
 		{
@@ -119,36 +252,36 @@ BYTE AESclass:: multiplicacion(BYTE a, BYTE b){
 	//cout<<"Resultado: "<< *res<<endl;
 	return res;
 }
-void AESclass::multVector(BYTE *vecEnt, BYTE *VecSal){
-	VecSal[0]=((multiplicacion(vecEnt[0],BYTE (0x02)))^(multiplicacion(vecEnt[1],BYTE (0x03)))^(vecEnt[2])^(vecEnt[3]));
-	VecSal[1]=((multiplicacion(vecEnt[1],BYTE (0x02)))^(multiplicacion(vecEnt[2],BYTE (0x03)))^(vecEnt[0])^(vecEnt[3]));
-	VecSal[2]=((multiplicacion(vecEnt[2],BYTE (0x02)))^(multiplicacion(vecEnt[3],BYTE (0x03)))^(vecEnt[0])^(vecEnt[1]));
-	VecSal[3]=((multiplicacion(vecEnt[3],BYTE (0x02)))^(multiplicacion(vecEnt[0],BYTE (0x03)))^(vecEnt[1])^(vecEnt[2]));
-}
-
-void AESclass::mixColums(BYTE **mEnt,BYTE **mSal){
+//void AESclass::mixColums(BYTE **mEnt,BYTE **mSal){
+void AESclass::mixColums(BYTE **mEnt){
 	for (int i = 0; i < 4; i++)
 	{
-		multVector(mEnt[i],mSal[i]);
+		//multVector(mEnt[i],mEnt[i]);
+		BYTE vec[4]={mEnt[i][0], mEnt[i][1], mEnt[i][2], mEnt[i][3]};
+		mEnt[i][0]=((multiplicacion(vec[0],BYTE (0x02)))^(multiplicacion(vec[1],BYTE (0x03)))^(vec[2])^(vec[3]));
+		mEnt[i][1]=((multiplicacion(vec[1],BYTE (0x02)))^(multiplicacion(vec[2],BYTE (0x03)))^(vec[0])^(vec[3]));
+		mEnt[i][2]=((multiplicacion(vec[2],BYTE (0x02)))^(multiplicacion(vec[3],BYTE (0x03)))^(vec[0])^(vec[1]));
+		mEnt[i][3]=((multiplicacion(vec[3],BYTE (0x02)))^(multiplicacion(vec[0],BYTE (0x03)))^(vec[1])^(vec[2]));
 	}
 }
 
-void AESclass::addRoundKey(BYTE **mEnt,BYTE **mSal, BYTE **roundKey){
+void AESclass::addRoundKey(BYTE **mEnt, BYTE **roundKey){
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{
-			mSal[i][j]=mEnt[i][j]^roundKey[i][j];
+			mEnt[i][j]=mEnt[i][j]^roundKey[i][j];
 		}
 	}
 }
 
-void AESclass::subByte(BYTE **mEnt, BYTE **mSal){
+//void AESclass::subByte(BYTE **mEnt, BYTE **mSal){
+void AESclass::subByte(BYTE **mEnt){
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{
-			mSal[i][j]=SBOX(mEnt[i][j]);
+			mEnt[i][j]=SBOX(mEnt[i][j]);
 		}
 	}
 }
@@ -161,20 +294,26 @@ BYTE AESclass::SBOX(BYTE ent){
 	return map;
 }
 
-void AESclass::shiftRows(BYTE **mEnt, BYTE **mSal){
+//void AESclass::shiftRows(BYTE **mEnt, BYTE **mSal){
+void AESclass::shiftRows(BYTE **mEnt){
 	short shift,au;
-	for (int i = 0; i < 4; ++i)
+	BYTE buf[4];
+	for (int fila = 0; fila < 4; ++fila)
 	{
-		shift=0+i;
+		shift=0+fila;
 		au=0;
-		for (int j = 0; j < 4; ++j)
+		buf[0]=mEnt[0][fila];
+			buf[1]=mEnt[1][fila];
+			buf[2]=mEnt[2][fila];
+			buf[3]=mEnt[3][fila];
+		for (int col = 0; col < 4; ++col)
 		{	
-			au=j+shift;
+			au=col+shift;
 			if (au>=4)
 			{
 				au=au-4;
 			}
-			mSal[j][i]=mEnt[au][i];
+			mEnt[col][fila]=buf[au];
 		}
 	}
 }
@@ -191,9 +330,9 @@ void AESclass::KeyExpansion(){
 	BYTE *word2=(BYTE*)malloc(sizeof(BYTE)*4);
 	for (int matriz = 1; matriz < 11; ++matriz) //  llave original, matriz>0 round key
 	{
-		for (int columna = 0; columna < 4; ++columna)
+		for (int columna = 0; columna < 4; ++columna)// recorre columnas
 		{
-			if (columna==0)
+			if (columna==0) //proceso de primer columna
 			{
 				memcpy(word,roundKeys[matriz-1][3-columna],sizeof(BYTE)*4);
 				wordRot(word);	
@@ -203,8 +342,8 @@ void AESclass::KeyExpansion(){
 					roundKeys[matriz][columna][fila]=word[fila]^roundKeys[matriz-1][columna][fila]^rcon[matriz-1][fila];
 				}
 			}
-			else{
-				
+			else //proceso de sigueintes columans 
+			{
 				memcpy(word,roundKeys[matriz-1][columna],sizeof(BYTE)*4);
 				for (int fila = 0; fila < 4; ++fila)
 				{
@@ -232,4 +371,26 @@ void AESclass::wordRot(BYTE *word){
 void AESclass::setKey(BYTE **sourcekey){
 	exchangeMatrix(roundKeys[0],sourcekey);
 	KeyExpansion();
+	/*printf("key\n");
+	printMatrix(roundKeys[0]);
+	printf("key 1\n");
+	printMatrix(roundKeys[1]);
+	printf("key 2\n");
+	printMatrix(roundKeys[2]);
+	printf("key 3\n");
+	printMatrix(roundKeys[3]);
+	printf("key 4\n");
+	printMatrix(roundKeys[4]);
+	printf("key 5\n");
+	printMatrix(roundKeys[5]);
+	printf("key 6\n");
+	printMatrix(roundKeys[6]);
+	printf("key 7\n");
+	printMatrix(roundKeys[7]);
+	printf("key 8\n");
+	printMatrix(roundKeys[8]);
+	printf("key 9\n");
+	printMatrix(roundKeys[9]);
+	printf("key 10\n");
+	printMatrix(roundKeys[10]);*/
 }
