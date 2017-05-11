@@ -170,9 +170,11 @@ public:
 		setKey(rKey);
 	
 		//create state matrix
+		printf("----------------------input\n");
 		stateM=mEnt;
 		printMatrix(stateM);
 		//initial round
+		printf("----------------------1\n");
 		addRoundKey(stateM,roundKeys[0]);
 		printMatrix(stateM);
 		//9rounds
@@ -182,13 +184,15 @@ public:
 			shiftRows(stateM);
 			mixColums(stateM);
 			addRoundKey(stateM,roundKeys[ronda+1]);
+			printf("----------------------%d\n",ronda+2);
+			printMatrix(stateM);
 		}
 		//final round
 		subByte(stateM);
 		shiftRows(stateM);
 		addRoundKey(stateM,roundKeys[10]);
 
-		
+		printf("----------------------output\n");
 		
 		printMatrix(stateM);
 	}
