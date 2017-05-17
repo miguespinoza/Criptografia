@@ -73,58 +73,36 @@ public:
 	AESclass(){
 		initMemory();
 	}
-	std::string encrypt(std::string entrada, BYTE **clabe){
-		setKey(clabe);
-		std::string salida="";
-		int longitud=entrada.size();
-		cout<<"longitud de cadena"<<longitud%128<<endl;
-		if (longitud%128!=0)
+	void encrypt(BYTE *entrada, BYTE **clave, BYTE *salida){
+		setKey(clave);
+		for (int i = 0; i < 4; ++i)
 		{
-			for (int i = 0; i < 128-longitud; ++i)
-			{
-				entrada+='_';
-			}
+			stateM[i][0]=entrada[0+(i*4)];
+			stateM[i][1]=entrada[1+(i*4)];
+			stateM[i][2]=entrada[2+(i*4)];
+			stateM[i][3]=entrada[3+(i*4)];
 		}
-		int numCiclos=entrada.size()/128;
-		cout<<"ciclos"<<entrada.size()<<endl;
-		for (int ciclo = 0; ciclo < numCiclos; ++ciclo)
+		addRoundKey(stateM,roundKeys[0]);
+		//9rounds
+		for (int ronda = 0; ronda < 9; ++ronda)
 		{
-			//create state matrix
-			int cont=0;
-			for (int i = 0; i < 4; ++i)
-			{
-				for (int j = 0; j < 4; ++j)
-				{
-					stateM[i][j]=BYTE(entrada[cont]);
-					cont++;
-				}
-			}
-			printMatrix(stateM);
-			//initial round
-			addRoundKey(stateM,roundKeys[0]);
-			//9rounds
-			for (int ronda = 0; ronda < 9; ++ronda)
-			{
-				subByte(stateM);
-				shiftRows(stateM);
-				mixColums(stateM);
-				addRoundKey(stateM,roundKeys[ronda+1]);
-			}
-			//final round
 			subByte(stateM);
 			shiftRows(stateM);
-			addRoundKey(stateM,roundKeys[10]);
-			for (int i = 0; i < 4; ++i)
-			{
-				for (int j = 0; j < 4; ++j)
-				{
-					salida+=stateM[i][j].to_string();
-				}
-			}
+			mixColums(stateM);
+			addRoundKey(stateM,roundKeys[ronda+1]);
+
 		}
-		
-		
-		return salida;
+		//final round
+		subByte(stateM);
+		shiftRows(stateM);
+		addRoundKey(stateM,roundKeys[10]);
+		for (int i = 0; i < 4; ++i)
+		{
+			salida[(i*4)+0]=stateM[i][0];
+			salida[(i*4)+1]=stateM[i][1];
+			salida[(i*4)+2]=stateM[i][2];
+			salida[(i*4)+3]=stateM[i][3];
+		}
 	}
 	void encryptTEST(){
 		BYTE **mEnt=(BYTE**)malloc(sizeof(BYTE)*4);
