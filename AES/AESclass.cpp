@@ -75,12 +75,15 @@ public:
 	}
 	void encrypt(BYTE *entrada, BYTE **clave, BYTE *salida){
 		setKey(clave);
+
+
 		for (int i = 0; i < 4; ++i)
 		{
-			stateM[i][0]=entrada[0+(i*4)];
+			memcpy(stateM[i],entrada,sizeof(BYTE)*4);
+			/*stateM[i][0]=entrada[0+(i*4)];
 			stateM[i][1]=entrada[1+(i*4)];
 			stateM[i][2]=entrada[2+(i*4)];
-			stateM[i][3]=entrada[3+(i*4)];
+			stateM[i][3]=entrada[3+(i*4)];*/
 		}
 		addRoundKey(stateM,roundKeys[0]);
 		//9rounds
