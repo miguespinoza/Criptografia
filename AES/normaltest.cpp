@@ -5,7 +5,9 @@
 #include <fstream>
 using namespace std;
 void CBC( BYTE **rKey, char const *archEnt, char const *archSal );
-void CFB( BYTE **rKey, char const *archEnt, char const *archSal );
+void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal );
+void CFBDec( BYTE **rKey, char const *archEnt, char const *archSal );
+
 
 int main(int argc, char const *argv[])
 {
@@ -39,12 +41,17 @@ int main(int argc, char const *argv[])
 	rKey[3][1]= BYTE(0xcf);
 	rKey[3][2]= BYTE(0x4f);
 	rKey[3][3]= BYTE(0x3c);
-	if (argc<2)
+	if (argc<3)
 	{
 		exit(-1);
 	}
-	CBC(rKey,argv[1],argv[2]);
-	//CFB(rKey,argv[1],argv[2]);
+	if(std::string(argv[1])=="enc")
+			CFBEnc(rKey,argv[2],argv[3]);
+	else if(std::string(argv[1])=="dec")
+			CFBDec(rKey,argv[2],argv[3]);	
+	
+	//CBC(rKey,argv[1],argv[2]);
+	
   	
 	return 0;
 }
@@ -52,7 +59,7 @@ int main(int argc, char const *argv[])
 void CBC( BYTE **rKey, char const *archEnt, char const *archSal ){
 	AESclass aes;
 	std::ifstream ifs (archEnt, std::ios::binary);
-	std::ofstream ofs (archSal, ios::out | ios::binary);
+	std::ofstream ofs (archSal, ios::out);
 	BYTE *sal=(BYTE*)malloc(sizeof(BYTE)*16);
 	BYTE *ent=(BYTE*)malloc(sizeof(BYTE)*16);
 	char s;
@@ -72,7 +79,7 @@ void CBC( BYTE **rKey, char const *archEnt, char const *archSal ){
     		aes.encrypt(ent,rKey,sal);
     		for (int i = 0; i < 16; ++i)
     		{
-    			//cout<<hex<<n<<endl;
+ //   			cout<<hex<<sal[i].to_ulong()<<endl;
     			s=(char)sal[i].to_ulong();
     			cout<<hex<<sal[i].to_ulong()<<endl;
     			ofs.write( &s, 1) ;
@@ -99,10 +106,10 @@ void CBC( BYTE **rKey, char const *archEnt, char const *archSal ){
   	ifs.close();
   	ofs.close();
 }
-void CFB( BYTE **rKey, char const *archEnt, char const *archSal ){
+void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal ){
 	AESclass aes;
 	std::ifstream ifs (archEnt, std::ios::binary);
-	std::ofstream ofs (archSal, ios::binary);
+	std::ofstream ofs (archSal, ios::out);
 	BYTE *sal=(BYTE*)malloc(sizeof(BYTE)*16);
 	BYTE *ent=(BYTE*)malloc(sizeof(BYTE)*16);
 	char s;
@@ -114,10 +121,11 @@ void CFB( BYTE **rKey, char const *archEnt, char const *archSal ){
 		sal[i]=BYTE(i);
 	}
 	while (ifs.good()) {
-  		cont++;
-    	if(c==0xffffffff)
-  			break;
-    	c=ifs.get();
+  		c=ifs.get();
+    	if(c>0xFFF)
+  			break;    	
+    	cont++;
+    	cout<<hex<<c<<"--"<<cont<<endl;
     	ent[cont]=BYTE(c);
     	if (cont==16)
     	{
@@ -129,7 +137,7 @@ void CFB( BYTE **rKey, char const *archEnt, char const *archSal ){
     		for (int i = 0; i < 16; ++i)
 			{
 				s=(char)sal[i].to_ulong();
-				cout<<hex<<sal[i].to_ulong()<<endl;
+				//cout<<hex<<sal[i].to_ulong()<<endl;
 	    		ofs.write( &s, 1) ;
 			}
     		cont=0;
@@ -140,6 +148,65 @@ void CFB( BYTE **rKey, char const *archEnt, char const *archSal ){
   	if (cont>0)
   	{
 		aes.encrypt(sal,rKey,sal);
+		for (int i = 0; i < 16; ++i)
+		{
+			sal[i]=ent[i]^sal[i];
+		}
+		for (int i = 0; i < 16; ++i)
+		{
+			s=(char)sal[i].to_ulong();
+    		ofs.write( &s, 1) ;
+		}
+		cont=0;
+    	memset(ent, 0, 16);
+  	}
+}
+
+void CFBDec( BYTE **rKey, char const *archEnt, char const *archSal ){
+	AESclass aes;
+	std::ifstream ifs (archEnt, std::ios::binary);
+	std::ofstream ofs (archSal, ios::out);
+	BYTE *sal=(BYTE*)malloc(sizeof(BYTE)*16);
+	BYTE *ent=(BYTE*)malloc(sizeof(BYTE)*16);
+	char s;
+	unsigned long n;
+	uint c;
+	int cont=0;
+
+	for (int i = 0; i < 16; ++i)//vector aleatorio
+	{
+		sal[i]=BYTE(i);
+	}
+	aes.encrypt(sal,rKey,sal);
+	while (ifs.good()) {
+  		c=ifs.get();
+    	if(c>0xFFF)
+  			break;    	
+    	cont++;
+    	//cout<<hex<<c<<"--"<<cont<<endl;
+    	ent[cont]=BYTE(c);
+    	if (cont==16)
+    	{
+    		
+    		for (int i = 0; i < 16; ++i)
+    		{
+    			sal[i]=ent[i]^sal[i];
+    		}
+
+    		for (int i = 0; i < 16; ++i)
+			{
+				s=(char)sal[i].to_ulong();
+				cout<<hex<<sal[i].to_ulong()<<endl;
+	    		ofs.write( &s, 1) ;
+			}
+			aes.encrypt(sal,rKey,sal);
+    		cont=0;
+    		memset(ent, 0, 16);
+    	}
+
+  	}
+  	if (cont>0)
+  	{
 		for (int i = 0; i < 16; ++i)
 		{
 			sal[i]=ent[i]^sal[i];
