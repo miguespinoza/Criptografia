@@ -75,17 +75,17 @@ public:
 	}
 	void encrypt(BYTE *entrada, BYTE **clave, BYTE *salida){
 		setKey(clave);
-
-
 		for (int i = 0; i < 4; ++i)
 		{
-			memcpy(stateM[i],entrada,sizeof(BYTE)*4);
-			/*stateM[i][0]=entrada[0+(i*4)];
-			stateM[i][1]=entrada[1+(i*4)];
-			stateM[i][2]=entrada[2+(i*4)];
-			stateM[i][3]=entrada[3+(i*4)];*/
+			memcpy(stateM[i],&entrada[(i*4)],sizeof(BYTE)*4);
 		}
+		//create state matrix
+		printf("----------------------input\n");
+		printMatrix(stateM);
+		//initial round
+		//printf("----------------------1\n");
 		addRoundKey(stateM,roundKeys[0]);
+		//		printMatrix(stateM);
 		//9rounds
 		for (int ronda = 0; ronda < 9; ++ronda)
 		{
@@ -93,18 +93,23 @@ public:
 			shiftRows(stateM);
 			mixColums(stateM);
 			addRoundKey(stateM,roundKeys[ronda+1]);
-
+		//	printf("----------------------%d\n",ronda+2);
+		//	printMatrix(stateM);
 		}
 		//final round
 		subByte(stateM);
 		shiftRows(stateM);
 		addRoundKey(stateM,roundKeys[10]);
+		printf("----------------------output\n");
+		
+		printMatrix(stateM);
 		for (int i = 0; i < 4; ++i)
 		{
-			salida[(i*4)+0]=stateM[i][0];
-			salida[(i*4)+1]=stateM[i][1];
-			salida[(i*4)+2]=stateM[i][2];
-			salida[(i*4)+3]=stateM[i][3];
+			memcpy(&salida[i*4],stateM[i],sizeof(BYTE)*4);
+		}
+		for (int i = 0; i < 16; ++i)
+		{
+			cout<<hex<<salida[i].to_ulong();
 		}
 	}
 	void encryptTEST(){
@@ -115,7 +120,7 @@ public:
 			mEnt[i]=(BYTE*)malloc(sizeof(BYTE)*4);
 			rKey[i]=(BYTE*)malloc(sizeof(BYTE)*4);
 		}
-		mEnt[0][0]= BYTE(0x32);
+		/*mEnt[0][0]= BYTE(0x32);
 		mEnt[0][1]= BYTE(0x43);
 		mEnt[0][2]= BYTE(0xf6);
 		mEnt[0][3]= BYTE(0xa8);
@@ -130,8 +135,26 @@ public:
 		mEnt[3][0]= BYTE(0xe0);
 		mEnt[3][1]= BYTE(0x37);
 		mEnt[3][2]= BYTE(0x07);
-		mEnt[3][3]= BYTE(0x34);
+		mEnt[3][3]= BYTE(0x34);*/
 
+		mEnt[0][0]= BYTE(0x00);
+		mEnt[0][1]= BYTE(0x01);
+		mEnt[0][2]= BYTE(0x02);
+		mEnt[0][3]= BYTE(0x03);
+		mEnt[1][0]= BYTE(0x04);
+		mEnt[1][1]= BYTE(0x05);
+		mEnt[1][2]= BYTE(0x06);
+		mEnt[1][3]= BYTE(0x07);
+		mEnt[2][0]= BYTE(0x08);
+		mEnt[2][1]= BYTE(0x09);
+		mEnt[2][2]= BYTE(0x0a);
+		mEnt[2][3]= BYTE(0x0b);
+		mEnt[3][0]= BYTE(0x0c);
+		mEnt[3][1]= BYTE(0x0d);
+		mEnt[3][2]= BYTE(0x0e);
+		mEnt[3][3]= BYTE(0x0f);
+
+//2b7e151628aed2a6abf7158809cf4f3c
 		rKey[0][0]= BYTE(0x2b);
 		rKey[0][1]= BYTE(0x7e);
 		rKey[0][2]= BYTE(0x15);
