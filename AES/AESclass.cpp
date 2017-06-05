@@ -80,8 +80,8 @@ public:
 			memcpy(stateM[i],&entrada[(i*4)],sizeof(BYTE)*4);
 		}
 		//create state matrix
-		printf("----------------------input\n");
-		printMatrix(stateM);
+		//printf("----------------------input\n");
+		//printMatrix(stateM);
 		//initial round
 		//printf("----------------------1\n");
 		addRoundKey(stateM,roundKeys[0]);
@@ -100,16 +100,12 @@ public:
 		subByte(stateM);
 		shiftRows(stateM);
 		addRoundKey(stateM,roundKeys[10]);
-		printf("----------------------output\n");
+		//printf("----------------------output\n");
 		
-		printMatrix(stateM);
+		//printMatrix(stateM);
 		for (int i = 0; i < 4; ++i)
 		{
 			memcpy(&salida[i*4],stateM[i],sizeof(BYTE)*4);
-		}
-		for (int i = 0; i < 16; ++i)
-		{
-			cout<<hex<<salida[i].to_ulong();
 		}
 	}
 	void encryptTEST(){

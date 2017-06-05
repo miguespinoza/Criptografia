@@ -73,16 +73,16 @@ void CBC( BYTE **rKey, char const *archEnt, char const *archSal ){
   		c=ifs.get();
   		if(c==0xffffffff)
   			break;
-  		cout<<hex<<c<<endl;
+  		//cout<<hex<<c<<endl;
     	ent[cont]=BYTE(c);
     	if (cont==16)
     	{
     		aes.encrypt(ent,rKey,sal);
     		for (int i = 0; i < 16; ++i)
     		{
- //   			cout<<hex<<sal[i].to_ulong()<<endl;
+ //   			//cout<<hex<<sal[i].to_ulong()<<endl;
     			s=(char)sal[i].to_ulong();
-    			cout<<hex<<sal[i].to_ulong()<<endl;
+    			//cout<<hex<<sal[i].to_ulong()<<endl;
     			ofs.write( &s, 1) ;
     		}
     		cont=0;
@@ -120,34 +120,34 @@ void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal ){
 	for (int i = 0; i < 16; ++i)//vector aleatorio
 	{
 		sal[i]=BYTE(i);
-		//cout<<hex<<sal[i].to_ulong()<<endl;
+		////cout<<hex<<sal[i].to_ulong()<<endl;
 	}
 	while (ifs.good()) {
   		c=ifs.get();
     	if(c>0xFFF)
   			break;    	
     	
-    	//cout<<hex<<c<<"--"<<cont<<endl;
+    	////cout<<hex<<c<<"--"<<cont<<endl;
     	ent[cont]=BYTE(c);
     	cont++;
     	if (cont==16)
     	{
 
     		aes.encrypt(sal,rKey,sal);
-    		//cout<<endl;
+    		////cout<<endl;
     		for (int i = 0; i < 16; ++i)
     		{
-    		//	cout<<"|"<<hex<<ent[i].to_ulong()<<"XOR"<<sal[i].to_ulong();
+    		//	//cout<<"|"<<hex<<ent[i].to_ulong()<<"XOR"<<sal[i].to_ulong();
     			sal[i]=ent[i]^sal[i];
     		}
-    		//cout<<endl;
+    		////cout<<endl;
     		for (int i = 0; i < 16; ++i)
 			{
 				s=(char)sal[i].to_ulong();
-				cout<<hex<<sal[i].to_ulong();
+				//cout<<hex<<sal[i].to_ulong();
 	    		ofs.write( &s, 1) ;
 			}
-			//cout<<endl;
+			////cout<<endl;
     		cont=0;
     		memset(ent, 0, 16);
     	}
@@ -157,20 +157,20 @@ void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal ){
   	{
     	
     	aes.encrypt(sal,rKey,sal);
-    	//cout<<endl;
+    	////cout<<endl;
 		for (int i = 0; i < 16; ++i)
 		{
-			//cout<<"|"<<hex<<ent[i].to_ulong()<<"XOR"<<sal[i].to_ulong();
+			////cout<<"|"<<hex<<ent[i].to_ulong()<<"XOR"<<sal[i].to_ulong();
 			sal[i]=ent[i]^sal[i];
 		}
-		printf("\n");
+		//printf("\n");
 		for (int i = 0; i < 16; ++i)
 		{
 			s=(char)sal[i].to_ulong();
-			//cout<<hex<<sal[i].to_ulong();
+			////cout<<hex<<sal[i].to_ulong();
     		ofs.write( &s, 1) ;
 		}
-		printf("\n");
+		//printf("\n");
 		cont=0;
     	memset(ent, 0, 16);
   	}
@@ -191,15 +191,15 @@ void CFBDec( BYTE **rKey, char const *archEnt, char const *archSal ){
 	{
 		sal[i]=BYTE(i);
 	}
-	//cout<<hex<<sal[0].to_ulong()<<endl;
+	////cout<<hex<<sal[0].to_ulong()<<endl;
 	aes.encrypt(sal,rKey,sal);
-	//cout<<hex<<sal[0].to_ulong()<<endl;
+	////cout<<hex<<sal[0].to_ulong()<<endl;
 	while (ifs.good()) {
   		c=ifs.get();
     	if(c>0xFFF)
   			break;    	
     	
-    	//cout<<hex<<c<<"--"<<cont<<endl;
+    	////cout<<hex<<c<<"--"<<cont<<endl;
     	ent[cont]=BYTE(c);
     	cont++;
     	if (cont==16)
@@ -212,7 +212,7 @@ void CFBDec( BYTE **rKey, char const *archEnt, char const *archSal ){
     		for (int i = 0; i < 16; ++i)
 			{
 				s=(char)sal[i].to_ulong();
-				//cout<<hex<<sal[i].to_ulong()<<endl;
+				////cout<<hex<<sal[i].to_ulong()<<endl;
 	    		ofs.write( &s, 1) ;
 			}
 			aes.encrypt(ent,rKey,sal);
