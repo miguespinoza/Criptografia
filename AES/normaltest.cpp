@@ -7,8 +7,9 @@ using namespace std;
 void CBC( BYTE **rKey, char const *archEnt, char const *archSal );
 void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal );
 void CFBDec( BYTE **rKey, char const *archEnt, char const *archSal );
-
-
+void printMatrix(BYTE **mat);
+//usage
+//key  archEnt 		archSal		enc/dec 
 int main(int argc, char const *argv[])
 {
 	
@@ -26,7 +27,7 @@ int main(int argc, char const *argv[])
 			rKey[i]=(BYTE*)malloc(sizeof(BYTE)*4);
 	}
 	//2b7e151628aed2a6abf7158809cf4f3c
-	rKey[0][0]= BYTE(0x2b);
+	/*rKey[0][0]= BYTE(0x2b);
 	rKey[0][1]= BYTE(0x7e);
 	rKey[0][2]= BYTE(0x15);
 	rKey[0][3]= BYTE(0x16);
@@ -41,14 +42,29 @@ int main(int argc, char const *argv[])
 	rKey[3][0]= BYTE(0x09);
 	rKey[3][1]= BYTE(0xcf);
 	rKey[3][2]= BYTE(0x4f);
-	rKey[3][3]= BYTE(0x3c);
-	if (argc<3)
+	rKey[3][3]= BYTE(0x3c);*/
+
+	if (argc<4)
 	{
 		exit(-1);
 	}
-	if(std::string(argv[1])=="enc")
+	int cont=0;
+	std::string arg1(argv[1]);
+    //cout<<arg1<<endl;
+    int contt=0;
+    //cout<<arg1[1];
+    
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			rKey[i][j]=BYTE(arg1[contt]);
+			contt++;
+		}
+	}
+	if(std::string(argv[4])=="enc")
 			CFBEnc(rKey,argv[2],argv[3]);
-	else if(std::string(argv[1])=="dec")
+	else if(std::string(argv[4])=="dec")
 			CFBDec(rKey,argv[2],argv[3]);	
 	
 	//CBC(rKey,argv[1],argv[2]);
@@ -106,6 +122,16 @@ void CBC( BYTE **rKey, char const *archEnt, char const *archSal ){
   	}
   	ifs.close();
   	ofs.close();
+}
+void printMatrix(BYTE **mat){
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			cout<<hex<<mat[j][i].to_ulong()<<"   ";
+		}
+		cout<<endl;
+	}
 }
 void CFBEnc( BYTE **rKey, char const *archEnt, char const *archSal ){
 	AESclass aes;
