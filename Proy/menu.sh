@@ -42,10 +42,12 @@ while getopts ":c:s:e:k:v:f:g" opt; do
         openssl dgst -sha256 -verify public.pem -signature /tmp/sign.sha256 $OPTARG
         ;;
     \?)
-      echo "            -  generar clabes RSA -g
+      echo "***********************************************************************************************
+            -  generar clabes RSA -g
             -  Cifrar AES -k key -e [ARCHIVO ENTRADA] -s [ARCHIVO SALIDA] -c [enc/dec]
             - Firmar documento -s [ARCHIVO SALIDA] -f [ARCHIVO A FIRMAR]
-            - Verificar firma -e [ARCHIVO FIRMA] -v [ARCHIVO A VERIFICAR]"
+            - Verificar firma -e [ARCHIVO FIRMA] -v [ARCHIVO A VERIFICAR]
+***********************************************************************************************"
       exit 1
       ;;
     :)
