@@ -1,9 +1,9 @@
 #!/bin/bash
  #usage
  #  -c cifrar enc/dec  -k llave    -e nombre archivo entrada -s nombre archivo salida 
- # generar clabes RSA -genKeys 
-#usage -k key -e archent -s salida 
-while getopts ":c:s:e:k:v:o:g" opt; do
+ # generar clabes RSA -g
+ #Cifrar AES -k key -e archent -s salida 
+while getopts ":c:s:e:k:v:f:g" opt; do
   case $opt in
     s)
         #echo "s"
@@ -27,12 +27,12 @@ while getopts ":c:s:e:k:v:o:g" opt; do
         ./AEScipher $sha $archEnt $archSal $encWork 
         ;;
     g)
-        echo "genKeys"
+        #echo "genKeys"
         openssl genrsa -des3 -out private.pem 2048
         openssl rsa -in private.pem -outform PEM -pubout -out public.pem
         ;;
-    o)  
-        echo "signature"
+    f)  
+        #echo "signature"
         echo $OPTARG
         openssl dgst -sha256 -sign private.pem -out /tmp/sign.sha256 $OPTARG
         openssl base64 -in /tmp/sign.sha256 -out signature.sig
@@ -42,7 +42,10 @@ while getopts ":c:s:e:k:v:o:g" opt; do
         openssl dgst -sha256 -verify public.pem -signature /tmp/sign.sha256 $OPTARG
         ;;
     \?)
-      echo "Invalid option: -$:OPTARG" >&2
+      echo "            -  generar clabes RSA -g
+            -  Cifrar AES -k key -e [ARCHIVO ENTRADA] -s [ARCHIVO SALIDA] -c [enc/dec]
+            - Firmar documento -f [ARCHIVO A FIRMAR]
+            - Verificar firma -e [ARCHIVO FIRMA] -v [ARCHIVO A VERIFICAR]"
       exit 1
       ;;
     :)
