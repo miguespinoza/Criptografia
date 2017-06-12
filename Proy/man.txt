@@ -1,5 +1,5 @@
 openssl man
-openssl man
+openssl ma
 OPENSSL(1)                                                                                OpenSSL                                                                                OPENSSL(1)
 
 NAME

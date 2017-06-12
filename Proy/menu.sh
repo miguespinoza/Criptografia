@@ -33,9 +33,9 @@ while getopts ":c:s:e:k:v:f:g" opt; do
         ;;
     f)  
         #echo "signature"
-        echo $OPTARG
+        #echo $OPTARG
         openssl dgst -sha256 -sign private.pem -out /tmp/sign.sha256 $OPTARG
-        openssl base64 -in /tmp/sign.sha256 -out signature.sig
+        openssl base64 -in /tmp/sign.sha256 -out $archSal
         ;;
     v) 
         openssl base64 -d -in $archEnt -out /tmp/sign.sha256
@@ -44,7 +44,7 @@ while getopts ":c:s:e:k:v:f:g" opt; do
     \?)
       echo "            -  generar clabes RSA -g
             -  Cifrar AES -k key -e [ARCHIVO ENTRADA] -s [ARCHIVO SALIDA] -c [enc/dec]
-            - Firmar documento -f [ARCHIVO A FIRMAR]
+            - Firmar documento -s [ARCHIVO SALIDA] -f [ARCHIVO A FIRMAR]
             - Verificar firma -e [ARCHIVO FIRMA] -v [ARCHIVO A VERIFICAR]"
       exit 1
       ;;
